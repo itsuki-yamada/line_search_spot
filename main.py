@@ -57,8 +57,11 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
+    from func.main import callback_local_spot
+    res = callback_local_spot(kwargs={'lat': event.message['latitude'], 'lon': event.message['longitude']})
     line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=f'{event.message}'
+                               TextSendMessage(text=f'{event.message}\n'
+                                                    f'{res}'
                                                ))
 
 
