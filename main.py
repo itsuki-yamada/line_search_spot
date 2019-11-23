@@ -23,24 +23,15 @@ def push_sample():
     """プッシュメッセージを送る"""
     user_id = os.environ['USER_ID']
     line_bot_api.push_message(user_id, TextSendMessage(text='Hello World!'))
-    i = 0
     spot = search_local_spot(kwargs={'lat': 39.928829, 'lon': 141.003034, })
-    while True:
-        push_map_messe(spot, user_id)
-        i += 1
-        if i == 10:
-            break
-
-    return 'OK'
-
-
-def push_map_messe(spot, user_id):
     line_bot_api.push_message(user_id, LocationSendMessage(type="location",
                                                            title=spot.name,
                                                            address=spot.address,
                                                            latitude=spot.lat,
                                                            longitude=spot.lon
                                                            ))
+
+    return 'OK'
 
 
 @app.route('/callback', methods=['POST'])
@@ -79,10 +70,10 @@ def handle_message(event):
     location_dict = ast.literal_eval(str(event.message))
     spots = search_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
     for spot in spots:
-        line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text=f'{spot.name}'
-                                                        f'{spots}'
-                                                   ))
+        # line_bot_api.reply_message(event.reply_token,
+        #                            TextSendMessage(text=f'{spot.name}'
+        #                                                 f'{spots}'
+        #                                            ))
 
         line_bot_api.reply_message(event.reply_token,
                                    LocationSendMessage(type="location",

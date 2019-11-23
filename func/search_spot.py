@@ -92,6 +92,7 @@ def search_local_spot(area_code='0', **kwargs):
                  'lon': kwargs['kwargs']['lon'],
                  'dist': 20,
                  # 'coupon': True
+                 'image': True
                  }
 
     else:
@@ -113,11 +114,12 @@ def search_local_spot(area_code='0', **kwargs):
                 ac=restaurant['Property']['GovernmentCode'],
                 address=restaurant['Property']['Address'],
                 lat=float(location[1]),
-                lon=float(location[0])
+                lon=float(location[0]),
             )
             if 'Coupon' in restaurant['Property']:
                 if len(restaurant['Property']['Coupon']) > 0:
                     res.edit_mobile_url(restaurant['Property']['Coupon'][0]['SmartPhoneUrl'])
+                    res.edit_image(restaurant['Property']['Coupon'][0]['Image1'])
             if 'Station' in restaurant['Property']:
                 if len(restaurant['Property']['Station']) > 0:
                     res.edit_access(restaurant['Property']['Station'][0])
@@ -132,6 +134,7 @@ def main():
         print(spot.name)
         print(spot.lat)
         print(spot.lon)
+        print(spot.image)
 
 
 if __name__ == '__main__':

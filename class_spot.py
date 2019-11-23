@@ -8,7 +8,7 @@ class AreaCode(object):
 
 
 class Restaurant(object):
-    def __init__(self, id, name, ac, address, mobile_url=None, access=None, lat=0.0, lon=0.0):
+    def __init__(self, id, name, ac, address, mobile_url=None, access=None, lat=0.0, lon=0.0, image=None):
         self.id = id
         self.name = name
         self.ac = ac
@@ -17,6 +17,7 @@ class Restaurant(object):
         self.access = access
         self.lat = lat
         self.lon = lon
+        self.image = image
 
     def edit_mobile_url(self, mobile_url=None):
         self.mobile_url = mobile_url
@@ -28,3 +29,6 @@ class Restaurant(object):
         return f'{self.name}\n' \
                f'{self.access}\n' \
                f'{self.mobile_url}'
+
+    def edit_image(self, image):
+        self.image = image
