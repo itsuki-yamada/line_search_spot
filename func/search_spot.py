@@ -98,8 +98,9 @@ def search_local_spot(area_code):
             if 'Coupon' in restaurant['Property']:
                 if len(restaurant['Property']['Coupon']) > 0:
                     res.edit_mobile_url(restaurant['Property']['Coupon'][0]['SmartPhoneUrl'])
-            if len(restaurant['Property']['Station']) > 0:
-                res.edit_access(restaurant['Property']['Station'][0])
+            if 'Station' in restaurant['Property']:
+                if len(restaurant['Property']['Station']) > 0:
+                    res.edit_access(restaurant['Property']['Station'][0])
             yield res
     else:
         return ['レストランが見つかりませんでした。']

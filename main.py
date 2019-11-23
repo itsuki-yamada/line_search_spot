@@ -41,13 +41,17 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    from func.main import callback_area_code
+    from func.main import callback_area_code, callback_local_spot
     area_code = callback_area_code(event.message.text)
+    spot = callback_local_spot(area_code)
 
     line_bot_api.reply_message(event.reply_token,
                                TextSendMessage(text=f'{event.message.text}'
                                                     f'{event.message.id}\n'
-                                                    f'{area_code}'
+                                                    f'******市町村******\n'
+                                                    f'{area_code}\n'
+                                                    f'******レストラン******\n'
+                                                    f'{spot}'
                                                ))
 
 
