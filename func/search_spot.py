@@ -72,7 +72,7 @@ def search_town(area_code: str) -> list:
                        name=town['name'])
 
 
-def search_local_spot(area_code):
+def search_local_spot_from_areacode(area_code):
     appid = os.environ['YAHOO_APPID']
     output = 'json'
     ac = area_code

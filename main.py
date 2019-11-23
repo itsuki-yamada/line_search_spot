@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
 
 app = Flask(__name__)
 
@@ -41,9 +41,9 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    from func.main import callback_area_code, callback_local_spot
+    from func.main import callback_area_code, callback_local_spot_from_areacode
     area_code = callback_area_code(event.message.text)
-    spot = callback_local_spot(area_code)
+    spot = callback_local_spot_from_areacode(area_code)
 
     line_bot_api.reply_message(event.reply_token,
                                TextSendMessage(text=f'{event.message.text}'
@@ -52,6 +52,13 @@ def handle_message(event):
                                                     f'{area_code}\n'
                                                     f'******レストラン******\n'
                                                     f'{spot}'
+                                               ))
+
+
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_message(event):
+    line_bot_api.reply_message(event.reply_token,
+                               TextSendMessage(text=f'{event.message.address}'
                                                ))
 
 
