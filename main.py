@@ -4,7 +4,7 @@ import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage, LocationSendMessage
 
 app = Flask(__name__)
 
@@ -17,13 +17,30 @@ def index():
     return 'You call index()'
 
 
+from func.search_spot import search_local_spot
 @app.route('/push_sample')
 def push_sample():
     """プッシュメッセージを送る"""
     user_id = os.environ['USER_ID']
     line_bot_api.push_message(user_id, TextSendMessage(text='Hello World!'))
+    i = 0
+    spot = search_local_spot(kwargs={'lat': 39.928829, 'lon': 141.003034, })
+    while True:
+        push_map_messe(spot, user_id)
+        i += 1
+        if i == 10:
+            break
 
     return 'OK'
+
+
+def push_map_messe(spot, user_id):
+    line_bot_api.push_message(user_id, LocationSendMessage(type="location",
+                                                           title=spot.name,
+                                                           address=spot.address,
+                                                           latitude=spot.lat,
+                                                           longitude=spot.lon
+                                                           ))
 
 
 @app.route('/callback', methods=['POST'])
@@ -58,12 +75,22 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
-    from func.main import callback_local_spot
+    from func.search_spot import search_local_spot
     location_dict = ast.literal_eval(str(event.message))
-    restaurants = callback_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
-    line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=f'{restaurants}'
-                                               ))
+    spots = search_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
+    for spot in spots:
+        line_bot_api.reply_message(event.reply_token,
+                                   TextSendMessage(text=f'{spot.name}'
+                                                        f'{spots}'
+                                                   ))
+
+        line_bot_api.reply_message(event.reply_token,
+                                   LocationSendMessage(type="location",
+                                                       title=spot.name,
+                                                       address=spot.address,
+                                                       latitude=spot.lat,
+                                                       longitude=spot.lon
+                                                       ))
 
 
 if __name__ == '__main__':

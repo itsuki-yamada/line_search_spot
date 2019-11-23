@@ -106,11 +106,14 @@ def search_local_spot(area_code='0', **kwargs):
     restaurants_dict = requests.get(url=url, params=param).json()
     if 'Feature' in restaurants_dict:
         for restaurant in restaurants_dict['Feature']:
+            location = restaurant['Geometry']['Coordinates'].split(',')
             res = Restaurant(
                 id=restaurant['Property']['Uid'],
                 name=restaurant['Name'],
                 ac=restaurant['Property']['GovernmentCode'],
                 address=restaurant['Property']['Address'],
+                lat=float(location[1]),
+                lon=float(location[0])
             )
             if 'Coupon' in restaurant['Property']:
                 if len(restaurant['Property']['Coupon']) > 0:
@@ -127,6 +130,8 @@ def main():
     print(search_local_spot(kwargs={'lat': None, 'lon': None}))
     for spot in search_local_spot('0', kwargs={'lat': 39.928829, 'lon': 141.003034, }):
         print(spot.name)
+        print(spot.lat)
+        print(spot.lon)
 
 
 if __name__ == '__main__':
