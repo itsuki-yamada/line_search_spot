@@ -41,10 +41,13 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    from func.main import callback_area_code
+    area_code = callback_area_code(event.message.text)
 
     line_bot_api.reply_message(event.reply_token,
                                TextSendMessage(text=f'{event.message.text}'
-                                                    f'{event.message.id}'
+                                                    f'{event.message.id}\n'
+                                                    f'{area_code}'
                                                ))
 
 
