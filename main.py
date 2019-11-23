@@ -1,3 +1,4 @@
+import ast
 import os
 
 from flask import Flask, request, abort
@@ -58,7 +59,8 @@ def handle_message(event):
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
     from func.main import callback_local_spot
-    res = callback_local_spot(kwargs={'lat': event.message['latitude'], 'lon': event.message['longitude']})
+    location_dict = ast.literal_eval(str(event.message))
+    res = callback_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict['longitude']})
     line_bot_api.reply_message(event.reply_token,
                                TextSendMessage(text=f'{event.message}\n'
                                                     f'{res}'

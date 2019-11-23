@@ -90,7 +90,8 @@ def search_local_spot(area_code='0', **kwargs):
                  'sort': random.choice(sort),
                  'lat': kwargs['kwargs']['lat'],
                  'lon': kwargs['kwargs']['lon'],
-                 'dist': 20
+                 'dist': 20,
+                 'coupon': True
                  }
 
     else:
