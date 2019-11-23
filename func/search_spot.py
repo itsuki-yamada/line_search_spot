@@ -6,7 +6,7 @@ import requests
 from class_spot import AreaCode, Restaurant
 
 
-def search_area_code(area_name: str) -> str:
+def search_area_code(area_name: str) :
     """
     Area_code_dbからAREA_CODEを取得する
     市町村名が入っていた場合は国土交通省APIを使用して取得をする
