@@ -58,12 +58,19 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
-    from func.main import callback_local_spot
+    if __name__ == '__main__':
+        from func.main import callback_local_spot
     location_dict = ast.literal_eval(str(event.message))
-    res = callback_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict['longitude']})
+    restaurants = callback_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
+    res_list = list()
+    for rest in restaurants:
+        res_list.append(rest)
+    restaurants = "\n".join(res_list)
     line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=f'{event.message}\n'
-                                                    f'{res}'
+                               TextSendMessage(text=f'{location_dict}'
+                                                    f'{location_dict["latitude"]}\n'
+                                                    f'{location_dict["longitude"]}\n'
+                                                    f'{restaurants}'
                                                ))
 
 
