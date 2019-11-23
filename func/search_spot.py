@@ -80,7 +80,6 @@ def search_local_spot(area_code='0', **kwargs):
     sort = ['rating', 'score', 'hybrid', 'review', 'kana', 'price', 'dist', 'geo', 'match']
 
     # TODO:リファクタリングすべし
-    # locationがあるときはparamを変更
     if 'lat' in kwargs['kwargs'] and 'lon' in kwargs['kwargs']:
         param = {'appid': appid,
                  'results': 30,
