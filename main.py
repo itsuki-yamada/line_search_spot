@@ -1,5 +1,6 @@
 import ast
 import os
+import random
 
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
@@ -18,6 +19,8 @@ def index():
 
 
 from func.search_spot import search_local_spot
+
+
 @app.route('/push_sample')
 def push_sample():
     """プッシュメッセージを送る"""
@@ -69,19 +72,19 @@ def handle_message(event):
     from func.search_spot import search_local_spot
     location_dict = ast.literal_eval(str(event.message))
     spots = search_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
-    for spot in spots:
-        # line_bot_api.reply_message(event.reply_token,
-        #                            TextSendMessage(text=f'{spot.name}'
-        #                                                 f'{spots}'
-        #                                            ))
+    spot = random.choice([sp for sp in spots])
+    # line_bot_api.reply_message(event.reply_token,
+    #                            TextSendMessage(text=f'{spot.name}'
+    #                                                 f'{spots}'
+    #                                            ))
 
-        line_bot_api.reply_message(event.reply_token,
-                                   LocationSendMessage(type="location",
-                                                       title=spot.name,
-                                                       address=spot.address,
-                                                       latitude=spot.lat,
-                                                       longitude=spot.lon
-                                                       ))
+    line_bot_api.reply_message(event.reply_token,
+                               LocationSendMessage(type="location",
+                                                   title=spot.name,
+                                                   address=spot.address,
+                                                   latitude=spot.lat,
+                                                   longitude=spot.lon
+                                                   ))
 
 
 if __name__ == '__main__':
