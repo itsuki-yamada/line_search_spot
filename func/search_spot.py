@@ -91,7 +91,7 @@ def search_local_spot(area_code='0', **kwargs):
                  'lat': kwargs['kwargs']['lat'],
                  'lon': kwargs['kwargs']['lon'],
                  'dist': 20,
-                 'coupon': True
+                 # 'coupon': True
                  }
 
     else:

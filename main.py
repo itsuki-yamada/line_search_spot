@@ -62,10 +62,7 @@ def handle_message(event):
     location_dict = ast.literal_eval(str(event.message))
     restaurants = callback_local_spot(kwargs={'lat': location_dict['latitude'], 'lon': location_dict["longitude"]})
     line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=f'{location_dict}'
-                                                    f'{location_dict["latitude"]}\n'
-                                                    f'{location_dict["longitude"]}\n'
-                                                    f'{restaurants}'
+                               TextSendMessage(text=f'{restaurants}'
                                                ))
 
 

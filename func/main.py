@@ -13,7 +13,7 @@ def callback_local_spot(area_code='0', **kwargs) -> str:
         restaurant_list = [res.name for res in search_local_spot(kwargs={'lat': kwargs['kwargs']['lat'],
                                                                          'lon': kwargs['kwargs']['lon']})]
     else:
-        restaurant_list = {res for res in search_local_spot(area_code)}
+        restaurant_list = {res.name for res in search_local_spot(area_code)}
     return '\n'.join(restaurant_list)
 
 
