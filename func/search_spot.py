@@ -72,20 +72,36 @@ def search_town(area_code: str) -> list:
                        name=town['name'])
 
 
-def search_local_spot_from_areacode(area_code):
+def search_local_spot(area_code='0', **kwargs):
     appid = os.environ['YAHOO_APPID']
     output = 'json'
     ac = area_code
     url = 'https://map.yahooapis.jp/search/local/V1/localSearch'
     sort = ['rating', 'score', 'hybrid', 'review', 'kana', 'price', 'dist', 'geo', 'match']
-    param = {'appid': appid,
-             'results': 30,
-             'output': output,
-             'ac': ac,
-             'device': 'mobile',
-             'gc': '01',
-             'sort': random.choice(sort)
-             }
+
+    # TODO:リファクタリングすべし
+    # locationがあるときはparamを変更
+    if 'lat' in kwargs['kwargs'] and 'lon' in kwargs['kwargs']:
+        param = {'appid': appid,
+                 'results': 30,
+                 'output': output,
+                 'device': 'mobile',
+                 'gc': '01',
+                 'sort': random.choice(sort),
+                 'lat': kwargs['kwargs']['lat'],
+                 'lon': kwargs['kwargs']['lon'],
+                 'dist': 20
+                 }
+
+    else:
+        param = {'appid': appid,
+                 'results': 30,
+                 'output': output,
+                 'ac': ac,
+                 'device': 'mobile',
+                 'gc': '01',
+                 'sort': random.choice(sort)
+                 }
     restaurants_dict = requests.get(url=url, params=param).json()
     if 'Feature' in restaurants_dict:
         for restaurant in restaurants_dict['Feature']:
@@ -104,3 +120,13 @@ def search_local_spot_from_areacode(area_code):
             yield res
     else:
         return ['レストランが見つかりませんでした。']
+
+
+def main():
+    print(search_local_spot(kwargs={'lat': None, 'lon': None}))
+    for spot in search_local_spot('0', kwargs={'lat': 39.928829, 'lon': 141.003034, }):
+        print(spot.name)
+
+
+if __name__ == '__main__':
+    main()
