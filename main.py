@@ -2,10 +2,12 @@ import ast
 import os
 import random
 
+import requests
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage, LocationSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage, LocationSendMessage, RichMenu, \
+    RichMenuSize, RichMenuArea, RichMenuBounds, URIAction, Action, LocationAction
 
 app = Flask(__name__)
 
@@ -16,8 +18,6 @@ handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 @app.route('/')
 def index():
     return 'You call index()'
-
-
 
 
 @app.route('/push_sample')
@@ -53,7 +53,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    from func.search_spot import search_area_code,search_local_spot
+    from func.search_spot import search_area_code, search_local_spot
     area_code = search_area_code(event.message.text)
     spot = random.choice([town for town in search_local_spot(area_code)])
 
@@ -81,6 +81,43 @@ def handle_message(event):
                                                    latitude=spot.lat,
                                                    longitude=spot.lon
                                                    ))
+
+
+@app.route('/richmenu', methods=['GET'])
+def rich_menu():
+    text_dict = {'type': 'location', 'label': 'location'}
+
+    rich_menu_to_create = RichMenu(
+        size=RichMenuSize(width=2500, height=1686),
+        selected=True,
+        name="rich_menu",
+        chat_bar_text="Tap here",
+        areas=[
+            RichMenuArea(
+                bounds=RichMenuBounds(x=0, y=0, width=1250, height=1686),
+                action=LocationAction(**text_dict)
+            )
+            # RichMenuArea(
+            #     bounds=RichMenuBounds(x=1250, y=0, width=1250, height=1686),
+            #     action=URIAction(label='Go to line.me', uri='https://line.me'))
+        ]
+    )
+    rich_menu_id = line_bot_api.create_rich_menu(rich_menu=rich_menu_to_create)
+    # url = 'https://api.line.me/v2/bot/richmenu'
+    # header = {'Authorization': os.environ['ACCESS_TOKEN'], 'Content-Type': 'json'}
+    # res = requests.post(url=url, headers=header,data=rich_menu_id)
+    with open('line_rich_menu.001.jpeg', 'rb') as f:
+        line_bot_api.set_rich_menu_image(rich_menu_id, 'image/jpeg', f)
+    # content = line_bot_api.get_rich_menu_image( rich_menu_id)
+    # with open('.', 'wb') as fd:
+    #     for chunk in content.iter_content():
+    #         fd.write(chunk)
+    requests.delete('https://api.line.me/v2/bot/user/all/richmenu')
+    line_bot_api.set_default_rich_menu(rich_menu_id)
+    print(rich_menu_id)
+    print(rich_menu_to_create)
+
+    return 'hoge'
 
 
 if __name__ == '__main__':
