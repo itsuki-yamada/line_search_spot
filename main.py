@@ -7,7 +7,7 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage, LocationSendMessage, RichMenu, \
-    RichMenuSize, RichMenuArea, RichMenuBounds, URIAction, Action, LocationAction
+    RichMenuSize, RichMenuArea, RichMenuBounds, URIAction, Action, LocationAction, StickerSendMessage
 
 app = Flask(__name__)
 
@@ -25,14 +25,16 @@ def push_sample():
     from func.search_spot import search_local_spot
     """プッシュメッセージを送る"""
     user_id = os.environ['USER_ID']
-    line_bot_api.push_message(user_id, TextSendMessage(text='Hello World!'))
-    spot = search_local_spot(kwargs={'lat': 39.928829, 'lon': 141.003034, })
-    line_bot_api.push_message(user_id, LocationSendMessage(type="location",
-                                                           title=spot.name,
-                                                           address=spot.address,
-                                                           latitude=spot.lat,
-                                                           longitude=spot.lon
-                                                           ))
+    line_bot_api.push_message(user_id, StickerSendMessage(package_id=11539,
+                                                          sticker_id=52114129))
+    # line_bot_api.push_message(user_id, TextSendMessage(text='Hello World!'))
+    # spot = search_local_spot(kwargs={'lat': 39.928829, 'lon': 141.003034, })
+    # line_bot_api.push_message(user_id, LocationSendMessage(type="location",
+    #                                                        title=spot.name,
+    #                                                        address=spot.address,
+    #                                                        latitude=spot.lat,
+    #                                                        longitude=spot.lon
+    #                                                        ))
 
     return 'OK'
 
@@ -53,18 +55,23 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    from func.search_spot import search_area_code, search_local_spot
-    area_code = search_area_code(event.message.text)
-    spot = random.choice([town for town in search_local_spot(area_code)])
-
+    # from func.search_spot import search_area_code, search_local_spot
+    # area_code = search_area_code(event.message.text)
+    # spot = random.choice([town for town in search_local_spot(area_code)])
+    #
+    # line_bot_api.reply_message(event.reply_token,
+    #                            TextSendMessage(text=f'{event.message.text}'
+    #                                                 f'{event.message.id}\n'
+    #                                            ),
+    #                            TextSendMessage(text=f'******市町村******\n'
+    #                                                 f'{area_code}\n'),
+    #                            TextSendMessage(text=f'******レストラン******\n'
+    #                                                 f'{spot}'))
+    sticker_list = [[11539, 52114129], [11539, 51626513], [11539, 51626506]]
+    sticker = random.choice(sticker_list)
     line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=f'{event.message.text}'
-                                                    f'{event.message.id}\n'
-                                               ),
-                               TextSendMessage(text=f'******市町村******\n'
-                                                    f'{area_code}\n'),
-                               TextSendMessage(text=f'******レストラン******\n'
-                                                    f'{spot}'))
+                               StickerSendMessage(package_id=11539,
+                                                  sticker_id=52114129))
 
 
 @handler.add(MessageEvent, message=LocationMessage)
@@ -94,7 +101,7 @@ def rich_menu():
         chat_bar_text="Tap here",
         areas=[
             RichMenuArea(
-                bounds=RichMenuBounds(x=0, y=0, width=1250, height=1686),
+                bounds=RichMenuBounds(x=0, y=0, width=2500, height=1686),
                 action=LocationAction(**text_dict)
             )
             # RichMenuArea(
